@@ -45,10 +45,20 @@ def draw_digits(numbers):
 
 
 import random
-rand_numbers = random.sample(range(10), 4)
-seven_seg_list = []
-for dig in rand_numbers:
-    seven_seg_list.append(digits[dig])
-    
+import time
+import subprocess as sp
 
-draw_digits(seven_seg_list)
+# Clear the screen before staring the Prints
+tmp = sp.call('clear', shell=True)
+
+for i in range(4):
+   rand_numbers = random.sample(range(10), 4)
+   seven_seg_list = []
+   for dig in rand_numbers:
+      seven_seg_list.append(digits[dig])
+   
+   # Print a line before drawing the numbers
+   print()
+   draw_digits(seven_seg_list)
+   time.sleep(5)
+   tmp = sp.call('clear', shell=True)
