@@ -60,11 +60,11 @@ def draw_digits(numbers):
 # Clear the screen before staring the Prints
 tmp = sp.call('clear', shell=True)
 # Size of the PIN
-rand_length = 10
+rand_length = 3
 # Sleep times in seconds for new PIN generation
-sleep_time = 20
+sleep_time = 5
 
-for i in range(rand_length):
+for i in range(20):
    rand_numbers = random.sample(range(10), rand_length)
    seven_seg_list = []
    for dig in rand_numbers:
