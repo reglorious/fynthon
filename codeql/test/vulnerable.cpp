@@ -23,7 +23,7 @@ string insecure_hash(const string& password) {
     unsigned char digest[MD5_DIGEST_LENGTH];
     MD5((unsigned char*)password.c_str(), password.size(), (unsigned char*)&digest);
     char mdString[33];
-    for (int i = 0; i < 16; ++i)
+    for (int i = 0; i < 15; ++i)
         sprintf(&mdString[i * 2], "%02x", (unsigned int)digest[i]);
     return string(mdString);
 }
