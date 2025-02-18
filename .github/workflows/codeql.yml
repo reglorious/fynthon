@@ -93,7 +93,7 @@ jobs:
         echo 'building cpp code'
         sudo apt-get update
         sudo apt-get install -y build-essential
-        ls -lrtR
+        g++ ./codeql/test/vulnerable.cpp 
         exit 1
 
     - name: Perform CodeQL Analysis
