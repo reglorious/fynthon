@@ -1,6 +1,6 @@
 import os
 import subprocess
-import pickle
+import json
 import hashlib
 import hmac
 import sqlite3
@@ -42,7 +42,7 @@ def ping():
 @app.route('/load', methods=['POST'])
 def load():
     data = request.data
-    obj = pickle.loads(data)  # Vulnerability: Deserializing untrusted input
+    obj = json.loads(data)  # Safe deserialization of untrusted input
     return f"Loaded object: {obj}"
 
 # 7. Cross-Site Scripting (XSS) vulnerability
