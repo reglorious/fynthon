@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <openssl/md5.h>
+#include <openssl/des.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -56,6 +57,42 @@ string generate_token() {
     return string(token);
 }
 
+// 11. Weak encryption method
+string weak_encrypt(const string& data, char key) {
+    string encrypted = data;
+    for (size_t i = 0; i < data.size(); ++i) {
+        encrypted[i] ^= key; // Vulnerability: Weak encryption using XOR with a single-byte key
+    }
+    return encrypted;
+}
+
+// 12. Triple DES encryption method
+string encrypt_health_info(const string& data, const string& key) {
+    if (key.size() != 24) {
+        throw invalid_argument("Key must be 24 bytes for Triple DES.");
+    }
+
+    DES_cblock key1, key2, key3;
+    memcpy(key1, key.data(), 8);
+    memcpy(key2, key.data() + 8, 8);
+    memcpy(key3, key.data() + 16, 8);
+
+    DES_key_schedule ks1, ks2, ks3;
+    DES_set_key_unchecked(&key1, &ks1);
+    DES_set_key_unchecked(&key2, &ks2);
+    DES_set_key_unchecked(&key3, &ks3);
+
+    string encrypted(data.size(), '\0');
+    for (size_t i = 0; i < data.size(); i += 8) {
+        DES_cblock input, output;
+        memcpy(input, data.data() + i, min(size_t(8), data.size() - i));
+        DES_ecb3_encrypt(&input, &output, &ks1, &ks2, &ks3, DES_ENCRYPT);
+        memcpy(&encrypted[i], output, min(size_t(8), data.size() - i));
+    }
+
+    return encrypted;
+}
+
 int main() {
     // Example usage of the vulnerable functions
     string username = "user1";
@@ -77,6 +114,16 @@ int main() {
     cout << "Generated token: " << generate_token() << endl;
 
     string signature = "d41d8cd98f00b204e9800998ecf8427e";
+
+    string sensitive_data = "SensitiveData";
+    char encryption_key = 'K';
+    string encrypted_data = weak_encrypt(sensitive_data, encryption_key);
+    cout << "Encrypted data: " << encrypted_data << endl;
+
+    string health_info = "BloodGlucose:120";
+    string des_key = "123456789012345678901234"; // Vulnerability: Hardcoded key
+    string encrypted_health_info = encrypt_health_info(health_info, des_key);
+    cout << "Encrypted health info: " << encrypted_health_info << endl;
 
     return 0;
 }
